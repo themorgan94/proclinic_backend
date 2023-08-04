@@ -27,6 +27,7 @@ db.taskFeature_has_user = require('./taskFeature_has_user.model.js')(sequelize, 
 db.taskFeature = require('./taskFeature.model.js')(sequelize, Sequelize);
 db.modulo = require('./modulo.model.js')(sequelize, Sequelize);
 db.moduleFeatureTaskStatus = require('./moduleFeatureTaskStatus.model.js')(sequelize, Sequelize);
+db.feature = require('./feature.model.js')(sequelize, Sequelize);
 
 db.persons.hasOne(db.users, {
   foreignKey: 'person_ID',

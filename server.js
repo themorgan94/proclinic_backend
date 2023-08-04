@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 
 require("./app/routes/user.routes")(app);
 require("./app/routes/modulo.routes")(app);
+require("./app/routes/feature.routes")(app);
 require("./app/routes/auth.routes")(app);
 
 
