@@ -12,7 +12,7 @@ exports.authenticateJWT = (req, res, next) => {
 
     jwt.verify(token, jwtConfig.ACCESS_TOKEN_PRIVATE_KEY, (err, user) => {
       if (err) {
-        return res.sendStatus(403);
+        return res.sendStatus(401);
       }
 
       req.user = user
@@ -32,7 +32,7 @@ exports.checkTaskFeature = (taskFeatureName) => {
       })
   
       if (taskFeature) {
-        const taskFeature_has_user = await TaskFeature_has_user.findOne({ where: { taskFeature_ID: taskFeature.ID }}) 
+        const taskFeature_has_user = await TaskFeature_has_user.findOne({ where: { taskFeature_ID: taskFeature.ID, user_ID: req.user.ID }}) 
         if (taskFeature_has_user) {
           next();
         }

@@ -12,11 +12,12 @@ const RefreshToken = db.refreshTokens;
 
 // login
 exports.login = async (req, res) => {
-  const { userName, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     const user = await User.findOne({
-      where: { userName }
+      where: { email },
+      include: Person
     })
     
     if (user) {
@@ -46,22 +47,30 @@ exports.login = async (req, res) => {
         })
 
         res.send({
-          user_ID: user.ID,
-          userName: user.userName,
-          accessToken,
-          refreshToken
+          status: 'success',
+          data: {
+            user_ID: user.ID,
+            userName: user.userName,
+            email: user.email,
+            firstName: user.person.firstName,
+            lastName: user.person.lastName,
+            accessToken,
+            refreshToken
+          }
         })
       }
       else {
-          res.status(400).send({
-              message: 'Username or password is incorrect.'
+          res.send({
+            status: 'failure',
+            data: 'Email or password is incorrect.'
           });
       }
     }
     else {
-        res.status(400).send({
-            message: 'Username or password is incorrect.'
-        });
+      res.send({
+        status: 'failure',
+        data: 'Email or password is incorrect.'
+      });
     }
   } catch(err) {
     res.status(500).send({
@@ -72,7 +81,7 @@ exports.login = async (req, res) => {
 };
 
 exports.signup = async (req, res) => {
-  const { userName, password, email, firstName, lastName, DOB } = req.body;
+  const { userName, password, email, firstName, lastName } = req.body;
 
   if (!userName || !password || !email || !firstName || !lastName) {
     res.status(400).send({
@@ -91,8 +100,7 @@ exports.signup = async (req, res) => {
     else {
       const newPerson = await Person.create({
         firstName,
-        lastName,
-        DOB
+        lastName
       })
 
       const payload = { email }
@@ -113,25 +121,25 @@ exports.signup = async (req, res) => {
         VerificationToken: verifyToken
       })
 
-      const transporter = nodemailer.createTransport({
-        host: mailConfig.MAIL_SERVER,
-        port: mailConfig.MAIL_PORT,
-        secure: true,
-        auth: {
-          user: mailConfig.MAIL_USER,
-          pass: mailConfig.MAIL_PASSWORD,
-        }
-      });
+      // const transporter = nodemailer.createTransport({
+      //   host: mailConfig.MAIL_SERVER,
+      //   port: mailConfig.MAIL_PORT,
+      //   secure: true,
+      //   auth: {
+      //     user: mailConfig.MAIL_USER,
+      //     pass: mailConfig.MAIL_PASSWORD,
+      //   }
+      // });
 
-      await transporter.sendMail({
-          from: mailConfig.MAIL_DEFAULT_SENDER,
-          to: email,
-          subject: "Please verify your email",
-          text: `${appConfig.BASE_URL}/verify/${verifyToken}`,
-      });
+      // await transporter.sendMail({
+      //     from: mailConfig.MAIL_DEFAULT_SENDER,
+      //     to: email,
+      //     subject: "Please verify your email",
+      //     text: `${appConfig.BASE_URL}/verify/${verifyToken}`,
+      // });
 
       res.status(201).json({
-        'message': 'Signup successfully'
+        'message': 'A confirmation email has been sent via email'
       })
     }
   } catch(err) {
@@ -188,7 +196,7 @@ exports.refreshToken = async (req, res) => {
         })
       }
       else {
-        const payload = { id: tokenDetails.id }
+        const payload = { ID: tokenDetails.ID }
         const accessToken = jwt.sign(
           payload,
           jwtConfig.ACCESS_TOKEN_PRIVATE_KEY,
@@ -209,17 +217,17 @@ exports.refreshToken = async (req, res) => {
 }
 
 exports.forgetPassword = async (req, res) => {
-  const userName = req.body.userName;
+  const email = req.body.email;
 
-  if (!userName) {
+  if (!email) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "Email can not be empty!"
     });
     return;
   }
 
   try {
-    const user = await User.findOne({ where: { userName }})
+    const user = await User.findOne({ where: { email }})
     if (user) {
       const payload = { ID: user.ID }
       const resetToken = jwt.sign(
@@ -234,22 +242,22 @@ exports.forgetPassword = async (req, res) => {
         where: { ID: user.ID }
       })
 
-      const transporter = nodemailer.createTransport({
-        host: mailConfig.MAIL_SERVER,
-        port: mailConfig.MAIL_PORT,
-        secure: true,
-        auth: {
-          user: mailConfig.MAIL_USER,
-          pass: mailConfig.MAIL_PASSWORD,
-        }
-      });
+      // const transporter = nodemailer.createTransport({
+      //   host: mailConfig.MAIL_SERVER,
+      //   port: mailConfig.MAIL_PORT,
+      //   secure: true,
+      //   auth: {
+      //     user: mailConfig.MAIL_USER,
+      //     pass: mailConfig.MAIL_PASSWORD,
+      //   }
+      // });
 
-      await transporter.sendMail({
-          from: mailConfig.MAIL_DEFAULT_SENDER,
-          to: user.email,
-          subject: "Password reset",
-          text: `${appConfig.BASE_URL}/resetPassword/${resetToken}`,
-      });
+      // await transporter.sendMail({
+      //     from: mailConfig.MAIL_DEFAULT_SENDER,
+      //     to: user.email,
+      //     subject: "Password reset",
+      //     text: `${appConfig.BASE_URL}/resetPassword/${resetToken}`,
+      // });
 
       res.status(201).json({
         'message': 'Password reset link sent to your email address'
@@ -257,7 +265,7 @@ exports.forgetPassword = async (req, res) => {
     }
     else {
       res.status(400).send({
-        'message': 'User with given username does not exist'
+        'message': 'User with given email does not exist'
       })
     }
   } catch(err) {

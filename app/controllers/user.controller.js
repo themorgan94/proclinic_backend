@@ -34,12 +34,12 @@ exports.create = async (req, res) => {
     })
 
     res.json({
-      'message': 'The user was created successfully'
+      'message': 'User was created successfully'
     })
   } catch(err) {
     res.status(500).send({
       message:
-        err.message || "Some error occurred while signup"
+        err.message || "Some error occurred while creating user"
     });
   }
 };
@@ -52,10 +52,10 @@ exports.list = async (req, res) => {
   var condition = {}
   
   if (userName) condition['userName'] = { [Op.like]: `%${userName}%` }
-  if (email) condition['userName'] = { [Op.like]: `%${email}%` }
+  if (email) condition['email'] = { [Op.like]: `%${email}%` }
 
   try {
-    const users = await User.findAll({ where: condition })
+    const users = await User.findAll({ where: condition, include: Person })
     res.send(users)
   } catch (err) {
     res.status(500).send({

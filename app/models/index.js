@@ -25,6 +25,8 @@ db.refreshTokens = require("./refreshToken.model.js")(sequelize, Sequelize);
 db.userStatus = require('./userStatus.model.js')(sequelize, Sequelize);
 db.taskFeature_has_user = require('./taskFeature_has_user.model.js')(sequelize, Sequelize);
 db.taskFeature = require('./taskFeature.model.js')(sequelize, Sequelize);
+db.modulo = require('./modulo.model.js')(sequelize, Sequelize);
+db.moduleFeatureTaskStatus = require('./moduleFeatureTaskStatus.model.js')(sequelize, Sequelize);
 
 db.persons.hasOne(db.users, {
   foreignKey: 'person_ID',
