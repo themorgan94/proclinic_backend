@@ -1,17 +1,14 @@
 module.exports = (sequelize, Sequelize) => {
-  const Group = sequelize.define("group", {
+  const Task = sequelize.define("task", {
     ID: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true
+    },  
+    encounterID: {
+      type: Sequelize.INTEGER
     },
-    name: {
-      type: Sequelize.STRING(100)
-    },
-    description: {
-      type: Sequelize.STRING
-    },
-    groupStatus_ID: {
+    formID: {
       type: Sequelize.INTEGER
     }
   }, {
@@ -19,6 +16,5 @@ module.exports = (sequelize, Sequelize) => {
     timestamps: false
   });
 
-  return Group;
+  return Task;
 };
-  

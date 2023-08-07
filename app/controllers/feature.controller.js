@@ -1,6 +1,9 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const Feature = db.feature;
+const TaskFeature = db.taskFeature;
+const TaskFeature_has_user = db.taskFeature_has_user;
+const TaskFeature_has_group = db.taskFeature_has_group;
 const ModuleFeatureTaskStatus = db.moduleFeatureTaskStatus;
 
 exports.create = async (req, res) => {
@@ -129,3 +132,81 @@ exports.delete = async (req, res) => {
     });
   }
 };
+
+exports.addUser = async (req, res) => {
+  const featureID = req.params.id;
+  const user_ID = req.body.user_ID || ''
+  if (!user_ID) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  try {
+    const taskFeatures = await TaskFeature.findAll({ where: { featureID }})
+    let rows = []
+
+    let exist_IDs = await TaskFeature_has_user.findAll({ 
+      where: { user_ID }, 
+      attributes: ['taskFeature_ID'], 
+      raw: true
+    })
+
+    exist_IDs = exist_IDs.map(row => row.taskFeature_ID)
+
+    taskFeatures.forEach(tf => {
+      if (exist_IDs.indexOf(tf.ID) < 0) rows.push({ taskFeature_ID: tf.ID, user_ID })  
+    });
+
+    await TaskFeature_has_user.bulkCreate(rows)
+
+    res.json({
+      'message': 'User was added to feature successfully'
+    })
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while add user to feature."
+    });
+  }
+}
+
+exports.addGroup = async (req, res) => {
+  const featureID = req.params.id;
+  const group_ID = req.body.group_ID || ''
+  if (!group_ID) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+    return;
+  }
+
+  try {
+    const taskFeatures = await TaskFeature.findAll({ where: { featureID }})
+    let rows = []
+
+    let exist_IDs = await TaskFeature_has_group.findAll({ 
+      where: { group_ID }, 
+      attributes: ['taskFeature_ID'], 
+      raw: true
+    })
+
+    exist_IDs = exist_IDs.map(row => row.taskFeature_ID)
+
+    taskFeatures.forEach(tf => {
+      if (exist_IDs.indexOf(tf.ID) < 0) rows.push({ taskFeature_ID: tf.ID, group_ID })  
+    });
+
+    await TaskFeature_has_group.bulkCreate(rows)
+
+    res.json({
+      'message': 'Group was added to feature successfully'
+    })
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while add group to feature."
+    });
+  }
+}

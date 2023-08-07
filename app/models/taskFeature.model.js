@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Group = sequelize.define("taskFeature", {
+  const TaskFeature = sequelize.define("taskFeature", {
     ID: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
@@ -19,9 +19,8 @@ module.exports = (sequelize, Sequelize) => {
     }
   }, {
     freezeTableName: true,
-    createdAt: false,
-    updatedAt: false
+    timestamps: false
   });
 
-  return Group;
+  return TaskFeature;
 };

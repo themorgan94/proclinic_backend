@@ -121,22 +121,22 @@ exports.signup = async (req, res) => {
         VerificationToken: verifyToken
       })
 
-      // const transporter = nodemailer.createTransport({
-      //   host: mailConfig.MAIL_SERVER,
-      //   port: mailConfig.MAIL_PORT,
-      //   secure: true,
-      //   auth: {
-      //     user: mailConfig.MAIL_USER,
-      //     pass: mailConfig.MAIL_PASSWORD,
-      //   }
-      // });
+      const transporter = nodemailer.createTransport({
+        host: mailConfig.MAIL_SERVER,
+        port: mailConfig.MAIL_PORT,
+        secure: true,
+        auth: {
+          user: mailConfig.MAIL_USER,
+          pass: mailConfig.MAIL_PASSWORD,
+        }
+      });
 
-      // await transporter.sendMail({
-      //     from: mailConfig.MAIL_DEFAULT_SENDER,
-      //     to: email,
-      //     subject: "Please verify your email",
-      //     text: `${appConfig.BASE_URL}/verify/${verifyToken}`,
-      // });
+      await transporter.sendMail({
+          from: mailConfig.MAIL_DEFAULT_SENDER,
+          to: email,
+          subject: "Please verify your email",
+          text: `${appConfig.BASE_URL}/verify/${verifyToken}`,
+      });
 
       res.status(201).json({
         'message': 'A confirmation email has been sent via email'
@@ -242,22 +242,22 @@ exports.forgetPassword = async (req, res) => {
         where: { ID: user.ID }
       })
 
-      // const transporter = nodemailer.createTransport({
-      //   host: mailConfig.MAIL_SERVER,
-      //   port: mailConfig.MAIL_PORT,
-      //   secure: true,
-      //   auth: {
-      //     user: mailConfig.MAIL_USER,
-      //     pass: mailConfig.MAIL_PASSWORD,
-      //   }
-      // });
+      const transporter = nodemailer.createTransport({
+        host: mailConfig.MAIL_SERVER,
+        port: mailConfig.MAIL_PORT,
+        secure: true,
+        auth: {
+          user: mailConfig.MAIL_USER,
+          pass: mailConfig.MAIL_PASSWORD,
+        }
+      });
 
-      // await transporter.sendMail({
-      //     from: mailConfig.MAIL_DEFAULT_SENDER,
-      //     to: user.email,
-      //     subject: "Password reset",
-      //     text: `${appConfig.BASE_URL}/resetPassword/${resetToken}`,
-      // });
+      await transporter.sendMail({
+          from: mailConfig.MAIL_DEFAULT_SENDER,
+          to: user.email,
+          subject: "Password reset",
+          text: `${appConfig.BASE_URL}/resetPassword/${resetToken}`,
+      });
 
       res.status(201).json({
         'message': 'Password reset link sent to your email address'

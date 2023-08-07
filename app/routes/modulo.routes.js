@@ -14,6 +14,10 @@ module.exports = app => {
     router.put("/:id", modulo.update);
   
     router.delete("/:id", modulo.delete);
+
+    router.post("/:id/user", modulo.addUser);
+
+    router.post("/:id/group", modulo.addGroup);
   
     app.use('/api/modules', authMiddleware.authenticateJWT, router);
   };

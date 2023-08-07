@@ -23,11 +23,16 @@ db.users = require("./user.model.js")(sequelize, Sequelize);
 db.persons = require("./person.model.js")(sequelize, Sequelize);
 db.refreshTokens = require("./refreshToken.model.js")(sequelize, Sequelize);
 db.userStatus = require('./userStatus.model.js')(sequelize, Sequelize);
+db.taskFeature_has_group = require('./taskFeature_has_group.model.js')(sequelize, Sequelize);
 db.taskFeature_has_user = require('./taskFeature_has_user.model.js')(sequelize, Sequelize);
 db.taskFeature = require('./taskFeature.model.js')(sequelize, Sequelize);
 db.modulo = require('./modulo.model.js')(sequelize, Sequelize);
 db.moduleFeatureTaskStatus = require('./moduleFeatureTaskStatus.model.js')(sequelize, Sequelize);
 db.feature = require('./feature.model.js')(sequelize, Sequelize);
+db.task = require('./task.model.js')(sequelize, Sequelize);
+db.group = require('./group.model.js')(sequelize, Sequelize);
+db.groupStatus = require('./groupStatus.model.js')(sequelize, Sequelize);
+db.group_has_user = require('./group_has_user.model.js')(sequelize, Sequelize);
 
 db.persons.hasOne(db.users, {
   foreignKey: 'person_ID',

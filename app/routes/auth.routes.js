@@ -9,11 +9,11 @@ module.exports = app => {
 
     router.get("/verify/:token", auth.verify);
 
-    router.post('/refreshToken', auth.refreshToken);
+    router.post('/refresh-token', auth.refreshToken);
 
-    router.post('/forgetPassword', auth.forgetPassword);
+    router.post('/forget-password', auth.forgetPassword);
 
-    router.post('/resetPassword', auth.resetPassword);
+    router.post('/reset-password', auth.resetPassword);
   
     app.use('/api/auth', router);
   };
