@@ -22,6 +22,33 @@ db.sequelize.sync()
     console.log("Failed to sync db: " + err.message);
   });
 
+const ApiLog = db.apiLog;
+
+app.use((req, res, next) => {
+  const oldJson = res.json;
+  res.json = (body) => {
+    res.locals.body = body;
+    return oldJson.call(res, body);
+  };
+
+
+  const oldSend = res.send;
+  res.send = (body) => {
+    res.locals.body = body;
+    return oldSend.call(res, body);
+  };
+
+
+  res.on('finish', async () => {
+    await ApiLog.create({
+      requestBody: JSON.stringify(req.body),
+      endpoint: req.originalUrl,
+      responseBody: JSON.stringify(res.locals.body)
+    })
+  })
+  next()
+})
+
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "Hello World!" });

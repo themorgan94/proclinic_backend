@@ -33,6 +33,7 @@ db.task = require('./task.model.js')(sequelize, Sequelize);
 db.group = require('./group.model.js')(sequelize, Sequelize);
 db.groupStatus = require('./groupStatus.model.js')(sequelize, Sequelize);
 db.group_has_user = require('./group_has_user.model.js')(sequelize, Sequelize);
+db.apiLog = require('./apiLog.model.js')(sequelize, Sequelize);
 
 db.persons.hasOne(db.users, {
   foreignKey: 'person_ID',
