@@ -3,6 +3,8 @@ const db = require("../models");
 const User = db.users;
 const Person = db.persons;
 const UserStatus = db.userStatus;
+const TaskFeature_has_user = db.taskFeature_has_user;
+const Group_has_user = db.group_has_user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new User
@@ -55,7 +57,11 @@ exports.list = async (req, res) => {
   if (email) condition['email'] = { [Op.like]: `%${email}%` }
 
   try {
-    const users = await User.findAll({ where: condition, include: Person })
+    const users = await User.findAll({ 
+      attributes: { exclude: ['password'] }, 
+      where: condition, 
+      include: Person
+    })
     res.send(users)
   } catch (err) {
     res.status(500).send({
@@ -70,7 +76,7 @@ exports.read = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const user = await User.findByPk(id, { include: Person })
+    const user = await User.findByPk(id, { attributes: { exclude: ['password'] }, include: Person })
     if (user) {
       res.send(user);
     } else {
@@ -134,23 +140,30 @@ exports.delete = async (req, res) => {
     const user = await User.findByPk(id)
     if (user) {
       const person_ID = user.person_ID
-      const num = await User.destroy({
+
+      await TaskFeature_has_user.destroy({
+        where: {
+          user_ID: user.ID
+        }
+      })
+
+      await Group_has_user.destroy({
+        where: {
+          user_ID: user.ID
+        }
+      })
+
+      await User.destroy({
         where: { ID: id }
       })
 
-      if (num == 1) {
-        await Person.destroy({
-          where: { ID: person_ID }
-        })
-        res.send({
-          message: "User was deleted successfully!"
-        });
-      }
-      else {
-        res.status(400).send({
-          message: `Cannot delete User with id=${id}`
-        });
-      }
+      await Person.destroy({
+        where: { ID: person_ID }
+      })
+
+      res.send({
+        message: "User was deleted successfully!"
+      });
     }
     else {
       res.status(404).send({

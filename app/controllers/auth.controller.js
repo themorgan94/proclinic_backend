@@ -9,6 +9,7 @@ const User = db.users;
 const Person = db.persons;
 const UserStatus = db.userStatus;
 const RefreshToken = db.refreshTokens;
+const Op = db.Sequelize.Op;
 
 // login
 exports.login = async (req, res) => {
@@ -16,7 +17,12 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({
-      where: { email },
+      where: { 
+        [Op.or]: [
+          { email: email },
+          { username: email }
+        ]
+      },
       include: Person
     })
     
