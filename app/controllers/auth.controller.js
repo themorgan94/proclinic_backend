@@ -197,7 +197,7 @@ exports.refreshToken = async (req, res) => {
   if (token) {
     jwt.verify(token.Token, jwtConfig.REFRESH_TOKEN_PRIVATE_KEY, (err, tokenDetails) => {
       if (err) {
-        res.send({
+        res.status(400).send({
           message: 'Invalid refresh token'
         })
       }
@@ -216,7 +216,7 @@ exports.refreshToken = async (req, res) => {
     })
   }
   else {
-    res.send({
+    res.status(400).send({
       message: 'Invalid refresh token'
     })
   }
